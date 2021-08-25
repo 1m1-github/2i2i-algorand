@@ -1,0 +1,18 @@
+#pragma version 4
+
+// TEAL to allow payout from escrow
+
+// Check that txn is a payment
+txn TypeEnum
+int pay
+==
+assert
+
+// Check that first transaction is state transaction
+gtxn 0 ApplicationID
+// TODO replace with STATE_APPID
+int 23366213
+==
+assert
+
+int 1

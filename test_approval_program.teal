@@ -1,0 +1,42 @@
+#pragma version 4
+
+txn OnCompletion
+int NoOp
+==
+bnz handle_noop
+
+txn OnCompletion
+int OptIn
+==
+bnz handle_optin
+
+txn OnCompletion
+int UpdateApplication
+==
+bnz handle_updateapp
+
+err
+
+handle_noop:
+int 0
+byte "mykey"
+txn ApplicationArgs 0
+app_local_put
+
+// Success
+int 1
+return
+
+handle_optin:
+int 1
+return
+
+handle_updateapp:
+global GroupSize
+int 1
+==
+global CreatorAddress
+txn Sender
+==
+&&
+return
