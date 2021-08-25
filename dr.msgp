@@ -1,0 +1,180 @@
+{
+  "accounts": [
+    {
+      "address": "YAVXHYBX7ILFZZ2PP5S5LAKU77R2NZOYBS2GBCNE3NMGS66Y44AOIA6BO4",
+      "amount": 19924000,
+      "amount-without-pending-rewards": 19924000,
+      "apps-local-state": [
+        {
+          "id": 23332745,
+          "key-value": [
+            {
+              "key": "c3BlZWQ=",
+              "value": {
+                "bytes": "",
+                "type": 2,
+                "uint": 23
+              }
+            }
+          ],
+          "schema": {
+            "num-byte-slice": 1,
+            "num-uint": 3
+          }
+        },
+        {
+          "id": 23366213,
+          "schema": {
+            "num-byte-slice": 1,
+            "num-uint": 3
+          }
+        },
+        {
+          "id": 23382220,
+          "schema": {
+            "num-byte-slice": 1,
+            "num-uint": 1
+          }
+        }
+      ],
+      "apps-total-schema": {
+        "num-byte-slice": 3,
+        "num-uint": 7
+      },
+      "created-apps": [
+        {
+          "id": 23332745,
+          "params": {
+            "approval-program": "BCABACYBCHJlY2VpdmVyNhoAgARMT0NLEkAAAQAyBIECEkQxFiISRDMBB4AgetY3NXCnFU3foX8hhQ4QXcVqZajIQ2Mcw62OlQTMyDcSRCIoYhREIig2GgFmgQFD",
+            "clear-state-program": "BIEB",
+            "creator": "YAVXHYBX7ILFZZ2PP5S5LAKU77R2NZOYBS2GBCNE3NMGS66Y44AOIA6BO4",
+            "local-state-schema": {
+              "num-byte-slice": 1,
+              "num-uint": 3
+            }
+          }
+        },
+        {
+          "id": 23366213,
+          "params": {
+            "approval-program": "BCAEAQAEAiYEBXNwZWVkB2JhbGFuY2UEdGltZQhyZWNlaXZlcjEZIxJAAB4xGSISQAESMRklEkABGDEZJBJAAQYxGYEFEkABCQA2GgCABExPQ0sSQAAQNhoAgAZVTkxPQ0sSQABMADIEJRJEMRYjEkQzAQeAIE6ZoBPvoDt4IOSLq9CDiu2gqH5loI/qdGV4nMf7GUsCEkQjKDYaAhdmIykzAQhmIyoyB2YjKzYaAWYiQzIEgQMPRDIEJA5EMRYjEkQzAgeAIHU9vM4w7oK0cXoD0B5q3AVpJAO6E9wve1PuFTNDt1CJEkQyBCQSQAAAIitiFEQiK2IzAwcSRCIoYhREMwEIIiliDkQzAwgiKWIORDMBCDIHIipiCSIoYgsORDMDCCIpYjIHIipiCSIoYgsJDkQzAQcoaDMBBypoMwEHKWgiQyJDMgQiEjIJMQASEEMA",
+            "clear-state-program": "BIEB",
+            "creator": "YAVXHYBX7ILFZZ2PP5S5LAKU77R2NZOYBS2GBCNE3NMGS66Y44AOIA6BO4",
+            "local-state-schema": {
+              "num-byte-slice": 1,
+              "num-uint": 3
+            }
+          }
+        },
+        {
+          "id": 23382220,
+          "params": {
+            "approval-program": "BCACAQAxGSMSQAAQMRkiEkAAFzEZgQQSQAARACOABW15a2V5NhoAZiJDIkMyBCISMgkxABIQQw==",
+            "clear-state-program": "BIEB",
+            "creator": "YAVXHYBX7ILFZZ2PP5S5LAKU77R2NZOYBS2GBCNE3NMGS66Y44AOIA6BO4",
+            "local-state-schema": {
+              "num-byte-slice": 1,
+              "num-uint": 1
+            }
+          }
+        }
+      ],
+      "pending-rewards": 0,
+      "reward-base": 27521,
+      "rewards": 0,
+      "round": 16192175,
+      "status": "Offline"
+    }
+  ],
+  "apps": [
+    {
+      "id": 23366213,
+      "params": {
+        "approval-program": "BCAEAQAEAiYEBXNwZWVkB2JhbGFuY2UEdGltZQhyZWNlaXZlcjEZIxJAAB4xGSISQAESMRklEkABGDEZJBJAAQYxGYEFEkABCQA2GgCABExPQ0sSQAAQNhoAgAZVTkxPQ0sSQABMADIEJRJEMRYjEkQzAQeAIE6ZoBPvoDt4IOSLq9CDiu2gqH5loI/qdGV4nMf7GUsCEkQjKDYaAhdmIykzAQhmIyoyB2YjKzYaAWYiQzIEgQMPRDIEJA5EMRYjEkQzAgeAIHU9vM4w7oK0cXoD0B5q3AVpJAO6E9wve1PuFTNDt1CJEkQyBCQSQAAAIitiFEQiK2IzAwcSRCIoYhREMwEIIiliDkQzAwgiKWIORDMBCDIHIipiCSIoYgsORDMDCCIpYjIHIipiCSIoYgsJDkQzAQcoaDMBBypoMwEHKWgiQyJDMgQiEjIJMQASEEMA",
+        "clear-state-program": "BIEB",
+        "creator": "YAVXHYBX7ILFZZ2PP5S5LAKU77R2NZOYBS2GBCNE3NMGS66Y44AOIA6BO4",
+        "local-state-schema": {
+          "num-byte-slice": 1,
+          "num-uint": 3
+        }
+      }
+    }
+  ],
+  "latest-timestamp": 1629694384,
+  "protocol-version": "https://github.com/algorandfoundation/specs/tree/abc54f79f9ad679d2d22f0fb9909fb005c16f8a1",
+  "round": 16192175,
+  "sources": null,
+  "txns": [
+    {
+  "sig": "p55khM61gpevK3m5UxZA1Ik6GSCX/MNRZD5X+/XzNZGn9P/CohO3o+nxT/GLMrl/C6FAmx+eFl1Kt9rswUnwDw==",
+  "txn": {
+    "apaa": [
+      "VU5MT0NL"
+    ],
+    "apid": 23366213,
+    "fee": 1000,
+    "fv": 16192163,
+    "gh": "SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+    "grp": "FvRMuVZ9iPOxAtMT0NHoxTx8nWogO4PB+UgB/F/J9pg=",
+    "lv": 16193163,
+    "note": "eZ1gSKgWoKI=",
+    "snd": "YAVXHYBX7ILFZZ2PP5S5LAKU77R2NZOYBS2GBCNE3NMGS66Y44AOIA6BO4",
+    "type": "appl"
+  }
+},
+    {
+  "lsig": {
+    "l": "BCABATEQIhJEMwAYgcWUkgsSRCI="
+  },
+  "txn": {
+    "amt": 111,
+    "fee": 1000,
+    "fv": 16192163,
+    "gen": "testnet-v1.0",
+    "gh": "SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+    "grp": "FvRMuVZ9iPOxAtMT0NHoxTx8nWogO4PB+UgB/F/J9pg=",
+    "lv": 16193163,
+    "note": "N87ISugWMik=",
+    "rcv": "LKVLY3J72YUVFPPK344652Y7MQH6LADUTK7XZFW6S2WRRCJIFBY6LLPX2I",
+    "snd": "J2M2AE7PUA5XQIHEROV5BA4K5WQKQ7TFUCH6U5DFPCOMP6YZJMBBPZQQEQ",
+    "type": "pay"
+  }
+},
+    {
+  "lsig": {
+    "l": "BCABATEQIhJEMwAYgcWUkgsSRCI="
+  },
+  "txn": {
+    "amt": 222,
+    "fee": 1000,
+    "fv": 16192163,
+    "gen": "testnet-v1.0",
+    "gh": "SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+    "grp": "FvRMuVZ9iPOxAtMT0NHoxTx8nWogO4PB+UgB/F/J9pg=",
+    "lv": 16193163,
+    "note": "h70NRAJbIBc=",
+    "rcv": "OU63ZTRQ52BLI4L2APIB42W4AVUSIA52CPOC662T5YKTGQ5XKCE5UMI5RE",
+    "snd": "J2M2AE7PUA5XQIHEROV5BA4K5WQKQ7TFUCH6U5DFPCOMP6YZJMBBPZQQEQ",
+    "type": "pay"
+  }
+},
+    {
+  "lsig": {
+    "l": "BCABATEQIhJEMwAYgcWUkgsSRCI="
+  },
+  "txn": {
+    "amt": 333,
+    "fee": 1000,
+    "fv": 16192163,
+    "gen": "testnet-v1.0",
+    "gh": "SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+    "grp": "FvRMuVZ9iPOxAtMT0NHoxTx8nWogO4PB+UgB/F/J9pg=",
+    "lv": 16193163,
+    "note": "umrre6awF/c=",
+    "rcv": "RMKUQNJ7KGMRWANBQ3KNHEKWNI7EA7ESWV3DOB7XMTG7DMP3LPDCI4FUNI",
+    "snd": "J2M2AE7PUA5XQIHEROV5BA4K5WQKQ7TFUCH6U5DFPCOMP6YZJMBBPZQQEQ",
+    "type": "pay"
+  }
+}
+  ]
+}

@@ -1,0 +1,19 @@
+// Atomic:
+// Call state app to check and set state
+// Send all ALGO from A to escrow
+
+// create unsigned transactions
+goal app call --from=A --app-id=APP_ID --out=state.txn --app-arg="str:LOCK" --app-arg="addr:RECEIVER_ADDR" --app-arg="int:SPEED"
+goal clerk send --from=A --to=ESCROW_ADDR --amount=BALANCE --out=escrow.txn
+
+// combine transactions
+cat state.txn escrow.txn > combinedtransactions.tx
+
+// group transactions
+goal clerk group --infile combinedtransactions.tx --outfile groupedtransactions.tx
+
+// sign
+goal clerk sign --infile groupedtransactions.tx --outfile signout.tx
+
+// send
+goal clerk rawsend --filename signout.tx

@@ -1,0 +1,302 @@
+#pragma version 4
+
+// Handle each possible OnCompletion type. We don't have to worry about
+// handling ClearState, because the ClearStateProgram will execute in that
+// case, not the ApprovalProgram.
+
+txn OnCompletion
+int NoOp
+==
+bnz handle_noop
+
+txn OnCompletion
+int OptIn
+==
+bnz handle_optin
+
+txn OnCompletion
+int CloseOut
+==
+bnz handle_closeout
+
+txn OnCompletion
+int UpdateApplication
+==
+bnz handle_updateapp
+
+txn OnCompletion
+int DeleteApplication
+==
+bnz handle_deleteapp
+
+// Unexpected OnCompletion value. Should be unreachable.
+err
+
+handle_noop:
+// Handle NoOp
+
+
+
+// Handle LOCK transaction
+txna ApplicationArgs 0
+byte "LOCK"
+==
+bnz handle_lock
+
+// Handle UNLOCK transaction
+txna ApplicationArgs 0
+byte "UNLOCK"
+==
+bnz handle_unlock
+
+// Unexpected first arg. Panic
+err
+
+
+// Handle LOCK
+handle_lock:
+
+// Check that we have an atomic tx with size 2
+global GroupSize
+int 2
+==
+assert
+
+// Check that this is the first transaction
+txn GroupIndex
+int 0
+==
+assert
+
+// Check that the second transaction is to our escrow
+gtxn 1 Receiver
+// TODO change to ESCROW_ADDR
+addr J2M2AE7PUA5XQIHEROV5BA4K5WQKQ7TFUCH6U5DFPCOMP6YZJMBBPZQQEQ
+==
+assert
+
+// Check that state is not set
+// TODO if account has "receiver" key, ! fails - unelegant solution
+// DEBUG comment out following to test accounts that have "receiver" set
+// int 0
+// byte "receiver"
+// app_local_get
+// !
+// assert
+
+// Check that amount is enough
+global MinTxnFee
+int 4
+*
+gtxn 1 Amount
+<
+assert
+
+// Set state speed
+int 0
+byte "speed"
+txna ApplicationArgs 2
+btoi
+app_local_put
+
+// Set state balance
+// TODO need Amount of the other txn
+int 0
+byte "balance"
+gtxn 1 Amount
+app_local_put
+
+// Set state time
+int 0
+byte "time"
+global LatestTimestamp
+app_local_put
+
+// Set state receiver
+int 0
+byte "receiver"
+txn ApplicationArgs 1
+app_local_put
+
+// Success
+int 1
+return
+
+handle_unlock:
+// Handle UNLOCK
+
+// Check that we have an atomic tx with size >= 3
+global GroupSize
+int 3
+>=
+assert
+
+// Check that we have an atomic tx with size <= 4
+global GroupSize
+int 4
+<=
+assert
+
+// Check that this is the first transaction
+txn GroupIndex
+int 0
+==
+assert
+
+// Check that second transaction is to pay fee
+gtxn 2 Receiver
+// TODO change to FEE_RECEIVER_ADDR
+addr OU63ZTRQ52BLI4L2APIB42W4AVUSIA52CPOC662T5YKTGQ5XKCE5UMI5RE
+==
+assert
+
+// Check 
+
+// Handle normal case: 4 transactions
+global GroupSize
+int 4
+==
+bnz handle_normal_case
+
+// Handle GroupSize == 3
+// TODO
+
+handle_normal_case:
+// Handle normal case (4 transactions)
+
+// Check A has receiver set
+int 1
+int 0
+byte "receiver"
+app_local_get_ex
+assert
+
+// Check B transaction receiver == A set receiver
+int 1
+byte "receiver"
+app_local_get
+gtxn 3 Receiver
+==
+assert
+
+// Check A has speed set
+int 1
+int 0
+byte "speed"
+app_local_get_ex
+assert
+
+// Check amount of A transaction <= locked balance
+gtxn 1 Amount
+int 1
+byte "balance"
+app_local_get
+<=
+assert
+
+// Check amount of B transaction <= locked balance
+gtxn 3 Amount
+int 1
+byte "balance"
+app_local_get
+<=
+assert
+
+// Check amount of A transaction is less according to speed and duration
+// TODO do we really want this? times are not exact, what if LatestTimestamp is too late, due to server issues, then coins are locked in escrow?
+// gtxn 1 Amount
+// global LatestTimestamp
+// int 1
+// byte "time"
+// app_local_get
+// -
+// int 1
+// byte "speed"
+// app_local_get
+// *
+// <=
+// assert
+
+// Check amount of B transaction is less according to speed and duration
+// B[amount] <= A[balance] - (LatestTimestamp - A[time]) * A[speed]
+// TODO do we really want this? times are not exact, what if LatestTimestamp is too late, due to server issues, then coins are locked in escrow?
+// gtxn 3 Amount
+// int 1
+// byte "balance"
+// app_local_get
+// global LatestTimestamp
+// int 1
+// byte "time"
+// app_local_get
+// -
+// int 1
+// byte "speed"
+// app_local_get
+// *
+// -
+// <=
+// assert
+
+// Check A + fee + B = balance
+// DEBUG off for now
+// gtxn 1 Amount
+// gtxn 2 Amount
+// gtxn 3 Amount
+// +
+// +
+// int 1
+// byte "balance"
+// app_local_get
+// ==
+// assert
+
+// Cleanup
+gtxn 1 Receiver
+byte "receiver"
+app_local_del
+
+gtxn 1 Receiver
+byte "speed"
+app_local_del
+
+gtxn 1 Receiver
+byte "time"
+app_local_del
+
+gtxn 1 Receiver
+byte "balance"
+app_local_del
+
+int 1
+return
+
+// Handle OptIn
+handle_optin:
+int 1
+return
+
+///////////////
+// // Update only by creator - for now
+// // TODO maybe make updating impossible for safety and assurance
+handle_updateapp:
+
+global GroupSize
+int 1
+==
+global CreatorAddress
+txn Sender
+==
+&&
+return
+
+
+// Handle CloseOut
+handle_closeout:
+
+// Cannot delete app
+handle_deleteapp:
+
+// Decline
+handle_decline:
+
+err
