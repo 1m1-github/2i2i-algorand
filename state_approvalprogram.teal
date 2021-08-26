@@ -238,17 +238,16 @@ assert
 // assert
 
 // Check A + fee + B = balance
-// DEBUG off for now
-// gtxn 1 Amount
-// gtxn 2 Amount
-// gtxn 3 Amount
-// +
-// +
-// int 1
-// byte "balance"
-// app_local_get
-// ==
-// assert
+gtxn 1 Amount
+gtxn 2 Amount
+gtxn 3 Amount
++
++
+int 1
+byte "balance"
+app_local_get
+==
+assert
 
 // Cleanup
 gtxn 1 Receiver
