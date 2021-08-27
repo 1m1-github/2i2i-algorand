@@ -30,12 +30,10 @@ int DeleteApplication
 bnz handle_deleteapp
 
 // Unexpected OnCompletion value. Should be unreachable.
-err
+b decline
 
 handle_noop:
 // Handle NoOp
-
-
 
 // Handle LOCK transaction
 txna ApplicationArgs 0
@@ -49,8 +47,14 @@ byte "UNLOCK"
 ==
 bnz handle_unlock
 
-// Unexpected first arg. Panic
-err
+// Handle UNLOCK transaction
+txna ApplicationArgs 0
+byte "CLEAR"
+==
+bnz handle_clear_state
+
+// Unexpected first arg
+b decline
 
 
 // Handle LOCK
@@ -68,13 +72,6 @@ int 0
 ==
 assert
 
-// Check that the second transaction is to our escrow
-gtxn 1 Receiver
-// TODO change to ESCROW_ADDR
-addr J2M2AE7PUA5XQIHEROV5BA4K5WQKQ7TFUCH6U5DFPCOMP6YZJMBBPZQQEQ
-==
-assert
-
 // Check that state is not set
 // TODO if account has "receiver" key, ! fails - unelegant solution
 // DEBUG comment out following to test accounts that have "receiver" set
@@ -84,6 +81,44 @@ assert
 // !
 // assert
 
+gtxn 1 TypeEnum
+int pay
+==
+bnz handle_lock_algo
+
+gtxn 1 TypeEnum
+int axfer
+==
+bnz handle_lock_asa
+
+b decline
+
+handle_lock_asa:
+
+// Check that the second transaction is to our escrow
+gtxn 1 AssetReceiver
+// TODO change to ESCROW_ADDR
+addr 6EU6EKDJFTHWQLRJS32DBYU5OL6WT4WXN7WNQHRIJAEYNBGUIJAZUIVJK4
+==
+assert
+
+gtxn 1 AssetAmount
+store 1
+gtxn 1 XferAsset
+store 2
+callsub set_state
+
+b approve
+
+handle_lock_algo:
+
+// Check that the second transaction is to our escrow
+gtxn 1 Receiver
+// TODO change to ESCROW_ADDR
+addr 6EU6EKDJFTHWQLRJS32DBYU5OL6WT4WXN7WNQHRIJAEYNBGUIJAZUIVJK4
+==
+assert
+
 // Check that amount is enough
 global MinTxnFee
 int 4
@@ -91,6 +126,16 @@ int 4
 gtxn 1 Amount
 <
 assert
+
+gtxn 1 Amount
+store 1
+gtxn 1 XferAsset
+store 2
+callsub set_state
+
+b approve
+
+set_state:
 
 // Set state speed
 int 0
@@ -103,7 +148,13 @@ app_local_put
 // TODO need Amount of the other txn
 int 0
 byte "balance"
-gtxn 1 Amount
+load 1
+app_local_put
+
+// Set state balance unit
+int 0
+byte "unit"
+load 2
 app_local_put
 
 // Set state time
@@ -118,9 +169,7 @@ byte "receiver"
 txn ApplicationArgs 1
 app_local_put
 
-// Success
-int 1
-return
+retsub
 
 handle_unlock:
 // Handle UNLOCK
@@ -249,7 +298,10 @@ app_local_get
 ==
 assert
 
+b unlock_cleanup
+
 // Cleanup
+unlock_cleanup:
 gtxn 1 Receiver
 byte "receiver"
 app_local_del
@@ -266,13 +318,38 @@ gtxn 1 Receiver
 byte "balance"
 app_local_del
 
-int 1
-return
+gtxn 1 Receiver
+byte "unit"
+app_local_del
+
+b approve
+
+handle_clear_state:
+txn Sender
+byte "receiver"
+app_local_del
+
+txn Sender
+byte "speed"
+app_local_del
+
+txn Sender
+byte "time"
+app_local_del
+
+txn Sender
+byte "balance"
+app_local_del
+
+txn Sender
+byte "unit"
+app_local_del
+
+b approve
 
 // Handle OptIn
 handle_optin:
-int 1
-return
+b approve
 
 ///////////////
 // // Update only by creator - for now
@@ -291,11 +368,15 @@ return
 
 // Handle CloseOut
 handle_closeout:
-
 // Cannot delete app
 handle_deleteapp:
-
 // Decline
 handle_decline:
+b decline
 
+decline:
 err
+
+approve:
+int 1
+return
