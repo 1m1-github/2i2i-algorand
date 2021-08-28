@@ -60,12 +60,6 @@ b decline
 // Handle LOCK
 handle_lock:
 
-// Check that we have an atomic tx with size 2
-global GroupSize
-int 2
-==
-assert
-
 // Check that this is the first transaction
 txn GroupIndex
 int 0
@@ -95,6 +89,12 @@ b decline
 
 handle_lock_asa:
 
+// Check that we have an atomic tx with size 2
+global GroupSize
+int 3
+==
+assert
+
 // Check that the second transaction is to our escrow
 gtxn 1 AssetReceiver
 // TODO change to ESCROW_ADDR
@@ -111,6 +111,12 @@ callsub set_state
 b approve
 
 handle_lock_algo:
+
+// Check that we have an atomic tx with size 2
+global GroupSize
+int 2
+==
+assert
 
 // Check that the second transaction is to our escrow
 gtxn 1 Receiver
@@ -174,32 +180,11 @@ retsub
 handle_unlock:
 // Handle UNLOCK
 
-// Check that we have an atomic tx with size >= 3
-global GroupSize
-int 3
->=
-assert
-
-// Check that we have an atomic tx with size <= 4
-global GroupSize
-int 4
-<=
-assert
-
-// Check that this is the first transaction
-txn GroupIndex
-int 0
+// Only owner can unlock
+txn Sender
+global CreatorAddress
 ==
 assert
-
-// Check that second transaction is to pay fee
-// gtxn 2 Receiver
-// // TODO change to FEE_RECEIVER_ADDR
-// addr OU63ZTRQ52BLI4L2APIB42W4AVUSIA52CPOC662T5YKTGQ5XKCE5UMI5RE
-// ==
-// assert
-
-// Check 
 
 // Handle normal case: 4 transactions
 global GroupSize

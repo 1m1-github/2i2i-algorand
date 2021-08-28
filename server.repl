@@ -22,6 +22,7 @@ goal clerk sign --infile groupedtransactions.txn --outfile signout.txn
 // send
 goal clerk rawsend --filename signout.txn
 
+// ALGO
 /////////
 
 // step 1: LOCK
@@ -53,10 +54,11 @@ tealdbg debug state_approvalprogram.teal -d dr.msgp --group-index 0
 // ASA
 /////////
 
-// step 1: LOCK
+// step 1: LOCK - A does this
 goal app call --from=$A --app-id=$STATE --app-arg="str:LOCK" --app-arg="addr:$B" --app-arg="int:3" --out=state.txn -w test
-goal asset send --amount=10 --assetid=$ASA --from=$A --to=$ESCROW --out=lock.txn -w test
-cat state.txn lock.txn > combinedtransactions.txn
+goal asset send --amount=10 --assetid=$ASA --from=$A --to=$ESCROW --out=lock_asa.txn -w test
+goal clerk send --from=$A --to=$ESCROW --amount=5000 --out=lock_algo.txn -w test
+cat state.txn lock_asa.txn lock_algo.txn > combinedtransactions.txn
 goal clerk group --infile combinedtransactions.txn --outfile groupedtransactions.txn
 goal clerk sign --infile groupedtransactions.txn --outfile signout.txn -w test
 goal clerk rawsend --filename signout.txn
@@ -64,16 +66,19 @@ goal clerk rawsend --filename signout.txn
 // step 2: UNLOCK
 goal app call --from=$OWNER --app-id=$STATE --app-account=$A --app-account=$B --app-arg="str:UNLOCK" --out=state.txn -w test
 goal asset send --from $ESCROW --to=$A --assetid=$ASA --amount=6 --out=A.txn
-goal asset send --from $ESCROW --to=$FEE --assetid=$ASA --amount=1 --out=fee.txn
+// send something back to A if less transactions occurred
+goal asset send --from $ESCROW --to=$FEE --assetid=$ASA --amount=1 --out=fee_asa.txn
 goal asset send --from $ESCROW --to=$B --assetid=$ASA --amount=3 --out=B.txn
-cat state.txn A.txn fee.txn B.txn > combinedtransactions.txn
+goal clerk send --from-program escrow.teal --to=$FEE --amount=1000 --out=fee_algo.txn
+cat state.txn A.txn fee_asa.txn B.txn fee_algo.txn > combinedtransactions.txn
 goal clerk group --infile combinedtransactions.txn --outfile groupedtransactions.txn
 goal clerk split --infile groupedtransactions.txn --outfile splitfiles
 goal clerk sign --infile splitfiles-0 --outfile splitfiles-0.sig -w test
 goal clerk sign --infile splitfiles-1 --outfile splitfiles-1.sig --program escrow.teal
 goal clerk sign --infile splitfiles-2 --outfile splitfiles-2.sig --program escrow.teal
 goal clerk sign --infile splitfiles-3 --outfile splitfiles-3.sig --program escrow.teal
-cat splitfiles-0.sig splitfiles-1.sig splitfiles-2.sig splitfiles-3.sig > signout.txn
+goal clerk sign --infile splitfiles-4 --outfile splitfiles-4.sig --program escrow.teal
+cat splitfiles-0.sig splitfiles-1.sig splitfiles-2.sig splitfiles-3.sig splitfiles-4.sig > signout.txn
 goal clerk rawsend --filename signout.txn
 
 // Clear state
