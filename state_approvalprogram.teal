@@ -5,11 +5,6 @@
 // case, not the ApprovalProgram.
 
 txn OnCompletion
-int NoOp
-==
-bnz handle_noop
-
-txn OnCompletion
 int OptIn
 ==
 bnz handle_optin
@@ -18,6 +13,17 @@ txn OnCompletion
 int CloseOut
 ==
 bnz handle_closeout
+
+txn Sender
+addr YAVXHYBX7ILFZZ2PP5S5LAKU77R2NZOYBS2GBCNE3NMGS66Y44AOIA6BO4
+==
+bz decline
+
+txn OnCompletion
+int NoOp
+==
+bnz handle_noop
+
 
 txn OnCompletion
 int UpdateApplication
