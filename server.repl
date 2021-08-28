@@ -70,7 +70,10 @@ cat state.txn A.txn fee.txn B.txn > combinedtransactions.txn
 goal clerk group --infile combinedtransactions.txn --outfile groupedtransactions.txn
 goal clerk split --infile groupedtransactions.txn --outfile splitfiles
 goal clerk sign --infile splitfiles-0 --outfile splitfiles-0.sig -w test
-cat splitfiles-0.sig splitfiles-1 splitfiles-2 splitfiles-3 > signout.txn
+goal clerk sign --infile splitfiles-1 --outfile splitfiles-1.sig --program escrow.teal
+goal clerk sign --infile splitfiles-2 --outfile splitfiles-2.sig --program escrow.teal
+goal clerk sign --infile splitfiles-3 --outfile splitfiles-3.sig --program escrow.teal
+cat splitfiles-0.sig splitfiles-1.sig splitfiles-2.sig splitfiles-3.sig > signout.txn
 goal clerk rawsend --filename signout.txn
 
 // Clear state

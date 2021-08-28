@@ -193,11 +193,11 @@ int 0
 assert
 
 // Check that second transaction is to pay fee
-gtxn 2 Receiver
-// TODO change to FEE_RECEIVER_ADDR
-addr OU63ZTRQ52BLI4L2APIB42W4AVUSIA52CPOC662T5YKTGQ5XKCE5UMI5RE
-==
-assert
+// gtxn 2 Receiver
+// // TODO change to FEE_RECEIVER_ADDR
+// addr OU63ZTRQ52BLI4L2APIB42W4AVUSIA52CPOC662T5YKTGQ5XKCE5UMI5RE
+// ==
+// assert
 
 // Check 
 
@@ -220,19 +220,108 @@ byte "receiver"
 app_local_get_ex
 assert
 
+// Check A has speed set
+// TODO really needed? should not be
+// int 1
+// int 0
+// byte "speed"
+// app_local_get_ex
+// assert
+
+// unit == 0 <=> ALGO only transfer
+int 1
+byte "unit"
+app_local_get
+int 0
+==
+bnz handle_unlock_normal_algo
+
+b handle_unlock_normal_asa
+
+handle_unlock_normal_asa:
+
+// Check B transaction receiver == A set receiver
+int 1
+byte "receiver"
+app_local_get
+gtxn 3 AssetReceiver
+==
+assert
+
+
+// Check amount of A transaction <= locked balance
+gtxn 1 AssetAmount
+int 1
+byte "balance"
+app_local_get
+<=
+assert
+
+// Check amount of B transaction <= locked balance
+gtxn 3 AssetAmount
+int 1
+byte "balance"
+app_local_get
+<=
+assert
+
+// Check amount of A transaction is less according to speed and duration
+// TODO do we really want this? times are not exact, what if LatestTimestamp is too late, due to server issues, then coins are locked in escrow?
+// gtxn 1 Amount
+// global LatestTimestamp
+// int 1
+// byte "time"
+// app_local_get
+// -
+// int 1
+// byte "speed"
+// app_local_get
+// *
+// <=
+// assert
+
+// Check amount of B transaction is less according to speed and duration
+// B[amount] <= A[balance] - (LatestTimestamp - A[time]) * A[speed]
+// TODO do we really want this? times are not exact, what if LatestTimestamp is too late, due to server issues, then coins are locked in escrow?
+// gtxn 3 Amount
+// int 1
+// byte "balance"
+// app_local_get
+// global LatestTimestamp
+// int 1
+// byte "time"
+// app_local_get
+// -
+// int 1
+// byte "speed"
+// app_local_get
+// *
+// -
+// <=
+// assert
+
+// Check A + fee + B = balance
+gtxn 1 AssetAmount
+gtxn 2 AssetAmount
+gtxn 3 AssetAmount
++
++
+int 1
+byte "balance"
+app_local_get
+==
+assert
+
+b unlock_cleanup_asa
+
+handle_unlock_normal_algo:
+
 // Check B transaction receiver == A set receiver
 int 1
 byte "receiver"
 app_local_get
 gtxn 3 Receiver
 ==
-assert
-
-// Check A has speed set
-int 1
-int 0
-byte "speed"
-app_local_get_ex
 assert
 
 // Check amount of A transaction <= locked balance
@@ -298,10 +387,10 @@ app_local_get
 ==
 assert
 
-b unlock_cleanup
+b unlock_cleanup_algo
 
 // Cleanup
-unlock_cleanup:
+unlock_cleanup_algo:
 gtxn 1 Receiver
 byte "receiver"
 app_local_del
@@ -319,6 +408,29 @@ byte "balance"
 app_local_del
 
 gtxn 1 Receiver
+byte "unit"
+app_local_del
+
+b approve
+
+unlock_cleanup_asa:
+gtxn 1 AssetReceiver
+byte "receiver"
+app_local_del
+
+gtxn 1 AssetReceiver
+byte "speed"
+app_local_del
+
+gtxn 1 AssetReceiver
+byte "time"
+app_local_del
+
+gtxn 1 AssetReceiver
+byte "balance"
+app_local_del
+
+gtxn 1 AssetReceiver
 byte "unit"
 app_local_del
 
