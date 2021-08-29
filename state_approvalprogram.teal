@@ -69,11 +69,11 @@ assert
 // Check that state is not set
 // TODO if account has "receiver" key, ! fails - unelegant solution
 // DEBUG comment out following to test accounts that have "receiver" set
-// int 0
-// byte "receiver"
-// app_local_get
-// !
-// assert
+int 0
+byte "receiver"
+app_local_get
+!
+assert
 
 gtxn 1 TypeEnum
 int pay
@@ -102,6 +102,15 @@ addr 6EU6EKDJFTHWQLRJS32DBYU5OL6WT4WXN7WNQHRIJAEYNBGUIJAZUIVJK4
 ==
 assert
 
+// Check that amount is correct
+global MinTxnFee
+int 5
+*
+gtxn 2 Amount
+==
+assert
+
+// Store balance and unit for use in sub
 gtxn 1 AssetAmount
 store 1
 gtxn 1 XferAsset
@@ -133,7 +142,12 @@ gtxn 1 Amount
 <
 assert
 
+// Store balance and unit for use in sub
 gtxn 1 Amount
+global MinTxnFee
+int 4
+*
+-
 store 1
 gtxn 1 XferAsset
 store 2
@@ -161,12 +175,6 @@ app_local_put
 int 0
 byte "unit"
 load 2
-app_local_put
-
-// Set state time
-int 0
-byte "time"
-global LatestTimestamp
 app_local_put
 
 // Set state receiver
@@ -205,14 +213,6 @@ byte "receiver"
 app_local_get_ex
 assert
 
-// Check A has speed set
-// TODO really needed? should not be
-// int 1
-// int 0
-// byte "speed"
-// app_local_get_ex
-// assert
-
 // unit == 0 <=> ALGO only transfer
 int 1
 byte "unit"
@@ -233,6 +233,11 @@ gtxn 3 AssetReceiver
 ==
 assert
 
+// Check that amount is correct
+global MinTxnFee
+gtxn 4 Amount
+==
+assert
 
 // Check amount of A transaction <= locked balance
 gtxn 1 AssetAmount
@@ -250,40 +255,22 @@ app_local_get
 <=
 assert
 
-// Check amount of A transaction is less according to speed and duration
-// TODO do we really want this? times are not exact, what if LatestTimestamp is too late, due to server issues, then coins are locked in escrow?
-// gtxn 1 Amount
-// global LatestTimestamp
-// int 1
-// byte "time"
-// app_local_get
-// -
-// int 1
-// byte "speed"
-// app_local_get
-// *
-// <=
-// assert
-
-// Check amount of B transaction is less according to speed and duration
-// B[amount] <= A[balance] - (LatestTimestamp - A[time]) * A[speed]
-// TODO do we really want this? times are not exact, what if LatestTimestamp is too late, due to server issues, then coins are locked in escrow?
-// gtxn 3 Amount
-// int 1
-// byte "balance"
-// app_local_get
-// global LatestTimestamp
-// int 1
-// byte "time"
-// app_local_get
-// -
-// int 1
-// byte "speed"
-// app_local_get
-// *
-// -
-// <=
-// assert
+// Check that amount of B transaction matches the duration
+// * panics on overflow, so we are safe
+// duration
+txn ApplicationArgs 1
+btoi
+int 1
+byte "speed"
+app_local_get
+*
+// to FEE
+gtxn 2 AssetAmount
+// to B
+gtxn 3 AssetAmount
++
+==
+assert
 
 // Check A + fee + B = balance
 gtxn 1 AssetAmount
@@ -325,44 +312,34 @@ app_local_get
 <=
 assert
 
-// Check amount of A transaction is less according to speed and duration
-// TODO do we really want this? times are not exact, what if LatestTimestamp is too late, due to server issues, then coins are locked in escrow?
-// gtxn 1 Amount
-// global LatestTimestamp
-// int 1
-// byte "time"
-// app_local_get
-// -
-// int 1
-// byte "speed"
-// app_local_get
-// *
-// <=
-// assert
+// Check that amount of B transaction matches the time
+// * panics on overflow, so we are safe
+// duration
+txn ApplicationArgs 1
+btoi
+int 1
+byte "speed"
+app_local_get
+*
+// to FEE
+gtxn 2 Amount
+// MinTxnFee is sent to FEE to cover owner txn cost
+global MinTxnFee
+-
+// to B
+gtxn 3 Amount
++
+==
+assert
 
-// Check amount of B transaction is less according to speed and duration
-// B[amount] <= A[balance] - (LatestTimestamp - A[time]) * A[speed]
-// TODO do we really want this? times are not exact, what if LatestTimestamp is too late, due to server issues, then coins are locked in escrow?
-// gtxn 3 Amount
-// int 1
-// byte "balance"
-// app_local_get
-// global LatestTimestamp
-// int 1
-// byte "time"
-// app_local_get
-// -
-// int 1
-// byte "speed"
-// app_local_get
-// *
-// -
-// <=
-// assert
+int 1
+return
 
 // Check A + fee + B = balance
 gtxn 1 Amount
 gtxn 2 Amount
+global MinTxnFee
+-
 gtxn 3 Amount
 +
 +
@@ -385,10 +362,6 @@ byte "speed"
 app_local_del
 
 gtxn 1 Receiver
-byte "time"
-app_local_del
-
-gtxn 1 Receiver
 byte "balance"
 app_local_del
 
@@ -408,10 +381,6 @@ byte "speed"
 app_local_del
 
 gtxn 1 AssetReceiver
-byte "time"
-app_local_del
-
-gtxn 1 AssetReceiver
 byte "balance"
 app_local_del
 
@@ -428,10 +397,6 @@ app_local_del
 
 txn Sender
 byte "speed"
-app_local_del
-
-txn Sender
-byte "time"
 app_local_del
 
 txn Sender
