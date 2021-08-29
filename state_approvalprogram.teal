@@ -427,7 +427,6 @@ txn Sender
 &&
 return
 
-
 // Handle CloseOut
 handle_closeout:
 // Cannot delete app
