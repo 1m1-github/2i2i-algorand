@@ -1,5 +1,7 @@
 # loltalk-algorand
 
+**moved to https://github.com/2i2i/algorand**
+
 Facilitate energy transfer from A to B via Algorand.
 
 In the first step, a stateless SC to lock funds and a stateful SC to set state.
